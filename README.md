@@ -1,15 +1,15 @@
 # :building_construction: jcompose :bricks:
-`jcompose` is a lightweight Python utility designed to make JSON configuration files modular and reusable. Instead of maintaining giant, monolithic JSON files, `jcompose` allows you to split them into smaller pieces, apply jq filters on the fly, and validate the final result against a schema.
+`jcompose` is a lightweight Python utility designed to make JSON configuration files modular and reusable. Instead of maintaining giant, monolithic JSON files, `jcompose` allows you to split them into smaller pieces, apply `jq` filters on the fly, and validate the final result against a schema.
 
 ##  Features
 
-- **Modular Includes:** Use the @include directive to pull in other JSON files.
+- **Modular Includes:** Use the `@include` directive to pull in other JSON files.
 
 - **Deep Merging:** Automatically merges nested dictionaries and concatenates lists.
 
-- **On-the-fly Filtering:** Leverage jq syntax directly within your include statements.
+- **On-the-fly Filtering:** Leverage `jq` syntax directly within your include statements.
 
-- **Smart Path Resolution:** Finds files using the JCONF_PATH environment variable.
+- **Smart Path Resolution:** Finds files using the `JCONF_PATH` environment variable.
 
 - **Schema Validation:** Ensures the final composed JSON meets your jsonschema requirements.
 
@@ -18,8 +18,8 @@
 
 - `jq`: The script calls the `jq` binary for filtering.
 
-    - Ubuntu/Debian: sudo apt install jq
-    - macOS: brew install jq
+    - Ubuntu/Debian: `sudo apt install jq`
+    - macOS: `brew install jq`
 
 - `jsonschema`: Required only if you use the `--schema` flag.
 
