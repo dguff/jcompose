@@ -167,7 +167,7 @@ class Composer:
         if self.debug:
             print(msg)
 
-    def load_json(self, path):
+    def load_json(self, path, stack=None):
         """Loads JSON from disk with an internal cache to prevent redundant I/O."""
         path = str(path)
         if path in self.cache:
@@ -175,8 +175,25 @@ class Composer:
             return self.cache[path]
 
         self.log(f"[load] {path}")
-        with open(path) as f:
-            data = json.load(f)
+        try:
+            with open(path) as f:
+                data = json.load(f)
+
+        except json.JSONDecodeError as e:
+            chain = " -> ".join(stack or [])
+            raise RuntimeError(
+                f"JSON parse error in file: {path}\n"
+                f"Line {e.lineno}, column {e.colno}: {e.msg}\n"
+                f"Include stack:\n{chain}"
+            ) from e
+
+        except Exception as e:
+            chain = " -> ".join(stack or [])
+            raise RuntimeError(
+                f"Error loading file: {path}\n"
+                f"Include stack:\n{chain}\n"
+                f"{str(e)}"
+            ) from e
 
         self.cache[path] = data
         return data
@@ -201,7 +218,7 @@ class Composer:
 
                 self.log(f"[include] {file} (filter={filt}, mode={mode})")
 
-                base = self.load_json(resolved)
+                base = self.load_json(resolved, stack + [str(resolved)])
                 base = self.expand(base, resolved, stack + [str(resolved)])
 
                 # apply jq filter
