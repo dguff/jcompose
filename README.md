@@ -1,4 +1,4 @@
-# jcompose
+# :building_construction: jcompose :bricks:
 `jcompose` is a lightweight Python utility designed to make JSON configuration files modular and reusable. Instead of maintaining giant, monolithic JSON files, `jcompose` allows you to split them into smaller pieces, apply jq filters on the fly, and validate the final result against a schema.
 
 ##  Features
