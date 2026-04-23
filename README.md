@@ -68,4 +68,127 @@ When you include a file (e.g., `"@include": "params.json"`), `jcompose` looks in
 Example: `export JCONF_PATH="/home/user/assets:/opt/project/config"`
 
 ## Examples
+### Basic include
+You can include a JSON file into your template:
 
+`template.json`
+```json
+{
+  "world": {
+    "@include": "world.json"
+  }
+}
+```
+
+`world.json`
+```json
+{
+  "name": "Earth",
+  "size": 100
+}
+```
+
+output:
+```json
+{
+  "world": {
+    "name": "Earth",
+    "size": 100
+  }
+}
+```
+---
+### Include with jq filter
+
+You can extract only part of a JSON file using a `jq` filter following the `::` separator. This example produces the same output as above.
+
+`template.json`
+```json
+{
+  "world": {
+    "@include": "world.json::.world"
+  }
+}
+```
+
+`world.json`
+```json
+{
+  "world": {
+    "name": "Earth",
+    "size": 100
+  },
+  "other": {}
+}
+```
+---
+### Inline jq transformations
+Filters can include full `jq` expressions, allowing you to modify data during inclusion:
+
+`template.json`
+```json
+{
+  "world": {
+    "@include": "world.json::.world | .name = \"Mars\""
+  }
+}
+```
+Output:
+```json
+{
+  "world": {
+    "name": "Mars",
+    "size": 100
+  }
+}
+```
+---
+### Merging objects
+Included objects are merged with local values:
+`template.json`
+```json
+{
+  "world": {
+    "@include": "world.json::.world",
+    "size": 200
+  }
+}
+```
+Output:
+```json
+{
+  "world": {
+    "name": "Earth",
+    "size": 200
+  }
+}
+```
+---
+### Arrays
+`jq` filters can return arrays, which are fully supported. Furthermore, specific elements can be modfied by applying online `jq` expressions:
+`data.json`
+```json
+{
+  "items": [
+    { "name": "a" },
+    { "name": "b" }
+  ]
+}
+```
+`template.json`
+```json
+{
+  "list": {
+    "@include": "data.json::.items | .[1].name = \"c\"" 
+  }
+}
+```
+Output:
+```json
+{
+  "list": [
+    { "name": "a" },
+    { "name": "c" }
+  ]
+}
+```
