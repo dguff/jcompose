@@ -59,6 +59,7 @@ def deep_merge(a, b):
     """
     Recursively merges two JSON-like structures. 
     Dictionaries are merged by key; lists are concatenated.
+    For scalar/type conflicts, 'b' overrides 'a'.
     """
     if isinstance(a, dict) and isinstance(b, dict):
         result = dict(a)
@@ -72,7 +73,7 @@ def deep_merge(a, b):
     if isinstance(a, list) and isinstance(b, list):
         return a + b  
 
-    return a
+    return b
 
 ########################################
 # Include parsing
