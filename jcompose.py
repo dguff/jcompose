@@ -81,12 +81,12 @@ def deep_merge(a, b):
 def parse_include(s):
     """
     Parses the '@include' string syntax.
-    Example: "file.json::.filter[replace]" -> ("file.json", ".filter", "replace")
+    Example: "file.json::.filter(replace)" -> ("file.json", ".filter", "replace")
     """
     mode = None
 
-    if s.endswith("]") and "[" in s:
-        idx = s.rfind("[")
+    if s.endswith(")") and "(" in s:
+        idx = s.rfind("(")
         mode = s[idx+1:-1]
         s = s[:idx]
 
