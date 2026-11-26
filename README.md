@@ -55,15 +55,19 @@ export PATH="$PATH:/path/to/your/jcompose-folder"
 
 ## How it Finds Files (`JCONF_PATH`)
 
-When you include a file (e.g., `"@include": "params.json"`), `jcompose` looks in the following order:
+How `jcompose` locates an included file depends on how its name is written:
 
-1. Relative to the current file.
+- **Explicit relative paths** (starting with `./` or `../`, e.g. `"@include": "./params.json"`) are resolved relative to the directory of the file containing the `@include`, and nowhere else.
 
-2. Inside any directory listed in the `--path` CLI argument.
+- **Plain names** (e.g. `"@include": "params.json"`) are searched recursively (including subdirectories) in the following order, and the first match wins:
 
-3. Inside any directory listed in the `JCONF_PATH` environment variable (colon-separated).
+  1. Inside any directory listed in the `--path` CLI argument.
 
-4. The current working directory.
+  2. Inside any directory listed in the `JCONF_PATH` environment variable (colon-separated).
+
+  3. The current working directory.
+
+  Plain names are **not** looked up relative to the including file: use `./` for that.
 
 Example: `export JCONF_PATH="/home/user/assets:/opt/project/config"`
 
@@ -192,3 +196,34 @@ Output:
   ]
 }
 ```
+---
+### Same-file references (`@ref`)
+Use `@ref` with a `jq` filter to reuse values from the **same file**. The filter is evaluated against the root of the file where the `@ref` is written, after that file's `@include`s have been expanded, so you can also reference included content.
+
+`template.json`
+```json
+{
+  "materials": ["air", "lava", "water"],
+  "defaults": { "temp": 87, "pressure": 1.0 },
+  "myDetector": {
+    "material_list": { "@ref": ".materials" },
+    "n_materials":   { "@ref": ".materials | length" },
+    "conditions":    { "@ref": ".defaults", "temp": 90 }
+  }
+}
+```
+Output (`myDetector` only):
+```json
+{
+  "material_list": ["air", "lava", "water"],
+  "n_materials": 3,
+  "conditions": { "temp": 90, "pressure": 1.0 }
+}
+```
+Local keys override the referenced values, as with `@include`.
+
+Notes:
+- References can point to values that are themselves `@ref`s; circular references are reported as errors.
+- Inside an included file, `@ref` refers to *that* file's root, not to the file including it.
+- As with `@include`, a trailing `(replace)` discards the local keys: `{"@ref": ".defaults(replace)"}`.
+- A filter that computes over a region containing unresolved `@ref`s (e.g. `.list | length` where `.list` holds `@ref` nodes) sees the placeholders, not the resolved values.
