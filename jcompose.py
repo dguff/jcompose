@@ -32,7 +32,7 @@ from pathlib import Path
 INCLUDE_KEY = "@include"
 REF_KEY = "@ref"
 MODES = ("merge", "replace")
-
+__version__ = "0.2.0"
 
 ########################################
 # Utilities
@@ -407,6 +407,7 @@ def main():
         )
     parser.add_argument("--debug", action="store_true", help="Enable debug mode")
     parser.add_argument("--schema", help="Validate against JSON schema")
+    parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
 
     args = parser.parse_args()
 
